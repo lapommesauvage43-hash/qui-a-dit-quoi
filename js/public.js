@@ -49,12 +49,15 @@ function buildClosingScreen() {
 }
 
 async function init() {
+  // Ordre décroissant : la publication la plus récente arrive en premier
+  // dans le chemin. On glisse ensuite vers la gauche pour remonter le
+  // temps, jusqu'à la plus ancienne, puis l'écran de clôture.
   const { data: posts, error } = await supabase
     .from("posts")
     .select("id, image_path, display_order")
     .eq("published", true)
     .order("display_order", { ascending: false });
-  
+
   if (error) {
     // Silence : l'application n'affiche jamais de texte technique.
     // On laisse simplement l'écran d'ouverture, sans le faire glisser.
@@ -70,18 +73,21 @@ async function init() {
   }
 
   const targetIndex = 0; // la publication la plus récente, montrée en premier
-  
+
   list.forEach((post, i) => {
     carousel.appendChild(buildPage(post, i, targetIndex));
   });
   carousel.appendChild(buildClosingScreen());
 
-  // Positionne instantanément le carrousel sur le dernier poste,
-  // pendant que l'écran d'ouverture masque encore tout.
+  // Positionne le carrousel sur la publication la plus récente (le début
+  // du chemin tel que présenté), pendant que l'écran d'ouverture masque
+  // encore tout. C'est déjà la position par défaut, on le fixe quand même
+  // explicitement pour rester robuste face à une restauration de scroll
+  // par le navigateur.
   requestAnimationFrame(() => {
     carousel.scrollTo({ left: 0, behavior: "auto" });
   });
-  
+
   let scrollResetTimer = null;
   carousel.addEventListener("scroll", () => {
     clearTimeout(scrollResetTimer);
