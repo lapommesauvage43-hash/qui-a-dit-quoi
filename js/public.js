@@ -53,8 +53,8 @@ async function init() {
     .from("posts")
     .select("id, image_path, display_order")
     .eq("published", true)
-    .order("display_order", { ascending: true });
-
+    .order("display_order", { ascending: false });
+  
   if (error) {
     // Silence : l'application n'affiche jamais de texte technique.
     // On laisse simplement l'écran d'ouverture, sans le faire glisser.
@@ -69,8 +69,8 @@ async function init() {
     return;
   }
 
-  const targetIndex = list.length - 1; // le dernier poste publié
-
+  const targetIndex = 0; // la publication la plus récente, montrée en premier
+  
   list.forEach((post, i) => {
     carousel.appendChild(buildPage(post, i, targetIndex));
   });
@@ -79,9 +79,9 @@ async function init() {
   // Positionne instantanément le carrousel sur le dernier poste,
   // pendant que l'écran d'ouverture masque encore tout.
   requestAnimationFrame(() => {
-    carousel.scrollTo({ left: targetIndex * window.innerWidth, behavior: "auto" });
+    carousel.scrollTo({ left: 0, behavior: "auto" });
   });
-
+  
   let scrollResetTimer = null;
   carousel.addEventListener("scroll", () => {
     clearTimeout(scrollResetTimer);
