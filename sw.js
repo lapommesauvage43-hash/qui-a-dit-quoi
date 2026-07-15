@@ -3,7 +3,7 @@
 // aux coupures réseau brèves. Les images et les données restent toujours
 // interrogées en direct auprès de Supabase (jamais périmées).
 
-const CACHE_NAME = "qadq-shell-v1";
+const CACHE_NAME = "qadq-shell-v2";
 const SHELL_FILES = [
   "/index.html",
   "/admin.html",
@@ -39,18 +39,17 @@ self.addEventListener("fetch", (event) => {
 
   if (event.request.method !== "GET") return;
 
+  // Réseau en priorité, pour que chaque mise à jour du site soit visible
+  // immédiatement. Le cache ne sert que si le réseau est indisponible.
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const network = fetch(event.request)
-        .then((response) => {
-          if (response && response.ok) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
-          return response;
-        })
-        .catch(() => cached);
-      return cached || network;
-    })
+    fetch(event.request)
+      .then((response) => {
+        if (response && response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        }
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
