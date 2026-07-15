@@ -1,0 +1,15 @@
+{
+  "name": "Administration — Qui a dit quoi",
+  "short_name": "Administration",
+  "description": "Espace privé de publication.",
+  "start_url": "/admin.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f2ead9",
+  "theme_color": "#f2ead9",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
