@@ -79,6 +79,44 @@ async function loadPosts() {
 
 // ---------- Ajout ----------
 
+const MAX_DIMENSION = 2000; // largeur/hauteur maximale, largement suffisant pour un écran de téléphone
+const JPEG_QUALITY = 0.85;
+
+// Redimensionne et compresse l'image avant envoi : les photos d'iPhone
+// pèsent souvent plusieurs Mo, ce qui ralentit inutilement le chargement
+// pour tous les visiteurs. On passe par un <img> classique (et non
+// createImageBitmap) car il respecte fiablement l'orientation EXIF sur
+// Safari, évitant qu'une photo se retrouve pivotée après compression.
+function resizeImage(file, maxDimension = MAX_DIMENSION, quality = JPEG_QUALITY) {
+  return new Promise((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      let { naturalWidth: width, naturalHeight: height } = img;
+      if (width > maxDimension || height > maxDimension) {
+        const scale = maxDimension / Math.max(width, height);
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+      URL.revokeObjectURL(objectUrl);
+      canvas.toBlob(
+        (blob) => (blob ? resolve(blob) : reject(new Error("La compression a échoué."))),
+        "image/jpeg",
+        quality
+      );
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Impossible de lire l'image."));
+    };
+    img.src = objectUrl;
+  });
+}
+
 fileInput.addEventListener("change", () => {
   const file = fileInput.files && fileInput.files[0];
   if (!file) return;
@@ -90,15 +128,20 @@ fileInput.addEventListener("change", () => {
 publishBtn.addEventListener("click", async () => {
   if (!pendingFile) return;
   publishBtn.disabled = true;
-  publishBtn.textContent = "Publication…";
+  publishBtn.textContent = "Préparation…";
 
   try {
-    const ext = (pendingFile.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
-    const path = `${crypto.randomUUID()}.${ext}`;
+    const resizedBlob = await resizeImage(pendingFile);
+    const path = `${crypto.randomUUID()}.jpg`;
 
+    publishBtn.textContent = "Publication…";
     const { error: uploadError } = await supabase.storage
       .from(STORAGE_BUCKET)
-      .upload(path, pendingFile, { cacheControl: "31536000", upsert: false });
+      .upload(path, resizedBlob, {
+        cacheControl: "31536000",
+        upsert: false,
+        contentType: "image/jpeg",
+      });
     if (uploadError) throw uploadError;
 
     const maxOrder = posts.reduce((m, p) => Math.max(m, p.display_order), -1);
