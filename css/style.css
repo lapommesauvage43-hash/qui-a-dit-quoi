@@ -35,7 +35,9 @@ body {
   -webkit-touch-callout: none;
 }
 
-/* ---------- Écrans d'ouverture / clôture ---------- */
+/* ---------- Écrans d'ouverture / clôture ----------
+   Chacun affiche une seule image plein écran (fournie par Philippe),
+   exactement comme une publication : l'application n'y ajoute aucun texte. */
 
 .identity-screen {
   position: relative;
@@ -44,59 +46,19 @@ body {
   height: 100dvh;
   flex: 0 0 100vw;
   scroll-snap-align: start;
-  background: radial-gradient(120% 100% at 50% 0%, var(--cream) 0%, var(--cream-2) 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 8vh 10vw;
+  background: var(--cream); /* filet de sécurité pendant le chargement */
   overflow: hidden;
 }
 
-.identity-screen .mark {
-  width: 92px;
-  height: 92px;
-  margin-bottom: 28px;
-  object-fit: contain;
-}
-
-.identity-screen h1 {
-  font-size: 1.7rem;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  margin: 0 0 18px 0;
-}
-
-.identity-screen h1 .accent {
-  color: var(--accent);
-  font-weight: 600;
-}
-
-.identity-screen .tagline {
-  font-size: 0.95rem;
-  line-height: 1.7;
-  font-style: italic;
-  color: #4a4436;
-  max-width: 30ch;
-  margin: 0;
-}
-
-.identity-screen .trail {
-  position: absolute;
-  bottom: 8vh;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: center;
-}
-
-.identity-screen .trail span {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--accent);
-  opacity: 0.6;
+.identity-screen .identity-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 /* Écran d'ouverture : posé au-dessus de tout, glisse pour se retirer. */
@@ -165,15 +127,6 @@ body {
   pointer-events: none; /* le geste est géré par .frame */
   user-select: none;
   -webkit-user-drag: none;
-}
-
-/* L'écran de clôture est à la fois une ".page" du carrousel (pour le
-   glissement horizontal) et un ".identity-screen" (même identité graphique
-   que l'ouverture). Cette règle, plus spécifique, garantit que son fond
-   reprend bien le dégradé cream plutôt que le fond noir des pages-images. */
-.page.identity-screen {
-  background: radial-gradient(120% 100% at 50% 0%, var(--cream) 0%, var(--cream-2) 100%);
-  flex-direction: column;
 }
 
 /* État de chargement discret, sans texte */
