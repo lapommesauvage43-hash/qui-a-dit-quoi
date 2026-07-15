@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>Qui a dit quoi ?</title>
+<meta name="description" content="Un chemin. Des rencontres. Des leçons." />
+
+<!-- PWA / installation iPhone -->
+<link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#f2ead9" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Qui a dit quoi" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+<link rel="icon" href="/icons/icon-192.png" />
+
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <!-- Écran d'ouverture : identité graphique, ~2 secondes, puis glisse. -->
+  <div id="opening-screen" class="identity-screen">
+    <img class="mark" src="/icons/logo.png" alt="" />
+    <h1><span class="accent">Qui</span> a dit quoi&nbsp;?</h1>
+    <p class="tagline">Sur le chemin, des mots pour ouvrir le regard,
+      éveiller la pensée et rencontrer l'autre.</p>
+  </div>
+
+  <!-- Le chemin : un poste = une image, glissement horizontal exclusif. -->
+  <div id="carousel"></div>
+
+  <script type="module" src="/js/public.js"></script>
+</body>
+</html>

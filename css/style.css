@@ -1,0 +1,192 @@
+/* ---------------------------------------------------------------
+   Qui a dit quoi ? — feuille de style unique.
+   Principe : silence, sobriété, respiration. Aucune décoration inutile.
+   --------------------------------------------------------------- */
+
+:root {
+  --ink: #2b2620;
+  --cream: #f2ead9;
+  --cream-2: #ece0c8;
+  --accent: #8c3b34;
+  --duration-splash: 2000ms;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  overscroll-behavior: none;
+  font-family: "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+  color: var(--ink);
+}
+
+/* Empêche tout geste parasite : sélection de texte, callout iOS, etc. */
+body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* ---------- Écrans d'ouverture / clôture ---------- */
+
+.identity-screen {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  flex: 0 0 100vw;
+  scroll-snap-align: start;
+  background: radial-gradient(120% 100% at 50% 0%, var(--cream) 0%, var(--cream-2) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8vh 10vw;
+  overflow: hidden;
+}
+
+.identity-screen .mark {
+  width: 92px;
+  height: 92px;
+  margin-bottom: 28px;
+  object-fit: contain;
+}
+
+.identity-screen h1 {
+  font-size: 1.7rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  margin: 0 0 18px 0;
+}
+
+.identity-screen h1 .accent {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.identity-screen .tagline {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  font-style: italic;
+  color: #4a4436;
+  max-width: 30ch;
+  margin: 0;
+}
+
+.identity-screen .trail {
+  position: absolute;
+  bottom: 8vh;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.identity-screen .trail span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.6;
+}
+
+/* Écran d'ouverture : posé au-dessus de tout, glisse pour se retirer. */
+#opening-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  transition: transform 900ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+#opening-screen.slide-away {
+  transform: translateX(-100%);
+}
+
+/* ---------- Carrousel horizontal (le carnet) ---------- */
+
+#carousel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  background: #000;
+}
+
+#carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.page {
+  position: relative;
+  flex: 0 0 100vw;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+.page .frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: pan-x;
+}
+
+.page img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  will-change: transform;
+  transform-origin: 0 0;
+  pointer-events: none; /* le geste est géré par .frame */
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* L'écran de clôture est à la fois une ".page" du carrousel (pour le
+   glissement horizontal) et un ".identity-screen" (même identité graphique
+   que l'ouverture). Cette règle, plus spécifique, garantit que son fond
+   reprend bien le dégradé cream plutôt que le fond noir des pages-images. */
+.page.identity-screen {
+  background: radial-gradient(120% 100% at 50% 0%, var(--cream) 0%, var(--cream-2) 100%);
+  flex-direction: column;
+}
+
+/* État de chargement discret, sans texte */
+.page.loading::after {
+  content: "";
+  position: absolute;
+  inset: 45% 45%;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-top-color: rgba(255, 255, 255, 0.7);
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
